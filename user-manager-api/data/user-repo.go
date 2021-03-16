@@ -1,6 +1,7 @@
 package data
 
 import (
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/models"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"

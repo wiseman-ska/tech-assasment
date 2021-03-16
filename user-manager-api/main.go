@@ -2,9 +2,11 @@ package main
 
 
 import (
+	"github.com/urfave/negroni"
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/commons"
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/controllers/routers"
 	"log"
 	"net/http"
-	"github.com/urfave/negroni"
 )
 
 func main() {

@@ -2,7 +2,9 @@ package routers
 
 import (
 	"github.com/gorilla/mux"
-
+	"github.com/urfave/negroni"
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/commons"
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/controllers"
 )
 
 func SetupUserRoutes(router *mux.Router) *mux.Router {
@@ -15,9 +17,7 @@ func SetupUserRoutes(router *mux.Router) *mux.Router {
 	userRouter.HandleFunc("/api/v1/users/{id}", controllers.UserRegisterHandler).Methods("GET")
 
 	router.PathPrefix("/api").Handler(negroni.New(
-		negroni.HandlerFunc(commons.Authorize),
-		
-		negroni.Wrap(userRouter),
+		negroni.HandlerFunc(commons.Authorize), negroni.Wrap(userRouter),
 	))
 	return router
 }

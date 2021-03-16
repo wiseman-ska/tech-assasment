@@ -2,7 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/tech-assessment/commons
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/commons"
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/controllers/routers"
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/data"
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/models"
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/controllers"
 	"net/http"
 )
 
@@ -18,14 +22,14 @@ func UserRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := &dataResource.Data
-	context := NewContext()
+	context := controllers.NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
 	userRepo := &data.UserRepository{Col: userCol}
 	_ = userRepo.CreateUser(user)
 	user.HashPassword = nil
 	if resp, err := json.Marshal(UserResource{Data: *user}); err != nil {
-		common.DisplayAppError(w,
+		commons.DisplayAppError(w,
 			err,
 			"An unexpected error has occured",
 			500,
@@ -43,7 +47,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	var dataResource LoginResource
 	err := json.NewDecoder(r.Body).Decode(&dataResource)
 	if err != nil {
-		common.DisplayAppError(w,
+		commons.DisplayAppError(w,
 			err,
 			"Invalid login data",
 			500,
@@ -55,21 +59,21 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		Email:    loginModel.Email,
 		Password: loginModel.Password,
 	}
-	context := NewContext()
+	context := routers.NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
 	userRepo := &data.UserRepository{Col: userCol}
 	if user, err := userRepo.Login(loginUser); err != nil {
-		common.DisplayAppError(w,
+		commons.DisplayAppError(w,
 			err,
 			"Invalid login credentials",
 			401,
 		)
 		return
 	} else {
-		token, err := common.GenerateToken(user.Email, "member")
+		token, err := commons.GenerateToken(user.Email, "member")
 		if err != nil {
-			common.DisplayAppError(w,
+			commons.DisplayAppError(w,
 				err,
 				"Error while generating the access token",
 				500,
@@ -84,7 +88,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		resp, err := json.Marshal(AuthUserResource{Data: authUser})
 		if err != nil {
-			common.DisplayAppError(w,
+			commons.DisplayAppError(w,
 				err,
 				"An unexpected error has occured",
 				500,

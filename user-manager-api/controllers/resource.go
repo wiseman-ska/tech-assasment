@@ -1,6 +1,8 @@
 package controllers
 
-import "models"
+import (
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/models"
+)
 
 type UserResource struct {
 	Data models.User `json:"data"`

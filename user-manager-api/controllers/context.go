@@ -1,6 +1,7 @@
-package routers
+package controllers
 
 import (
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/commons"
 	"gopkg.in/mgo.v2"
 )
 
