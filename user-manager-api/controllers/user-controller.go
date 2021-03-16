@@ -1,18 +1,16 @@
 package controllers
 
 import (
-"encoding/json"
-common "github.com/tech-assessment/user-manager-api/commons"
-"github.com/tech-assessment/user-manager-api/data"
-"github.com/tech-assessment/user-manager-api/commons/models"
-"net/http"
+	"encoding/json"
+	"github.com/tech-assessment/commons
+	"net/http"
 )
 
 func UserRegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var dataResource UserResource
 	err := json.NewDecoder(r.Body).Decode(&dataResource)
 	if err != nil {
-		common.DisplayAppError(w,
+		commons.DisplayAppError(w,
 			err,
 			"Invalid user data",
 			500,
@@ -33,7 +31,7 @@ func UserRegisterHandler(w http.ResponseWriter, r *http.Request) {
 			500,
 		)
 		return
-	}else {
+	} else {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		w.Write(resp)
@@ -54,7 +52,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	loginModel := dataResource.Data
 	loginUser := models.User{
-		Email: loginModel.Email,
+		Email:    loginModel.Email,
 		Password: loginModel.Password,
 	}
 	context := NewContext()
@@ -68,7 +66,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 			401,
 		)
 		return
-	}else {
+	} else {
 		token, err := common.GenerateToken(user.Email, "member")
 		if err != nil {
 			common.DisplayAppError(w,
@@ -81,7 +79,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		user.HashPassword = nil
 		authUser := AuthUserModel{
-			User: user,
+			User:  user,
 			Token: token,
 		}
 		resp, err := json.Marshal(AuthUserResource{Data: authUser})
@@ -98,6 +96,3 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-
-
-

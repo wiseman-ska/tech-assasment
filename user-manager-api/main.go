@@ -8,12 +8,12 @@ import (
 )
 
 func main() {
-	common.StartUp()
+	commons.StartUp()
 	router := routers.InitRoutes()
 	n := negroni.Classic()
 	n.UseHandler(router)
 	server := &http.Server{
-		Addr: common.AppConf.Server,
+		Addr: commons.AppConf.Server,
 		Handler: n,
 	}
 
