@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-const configPath = "../etc/config.json"
+const configPath = "user-manager-api/etc/config.json"
 
 type (
 	AppError struct {
