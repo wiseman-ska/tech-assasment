@@ -3,10 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/wiseman-ska/tech-assessment/user-manager-api/commons"
-	"github.com/wiseman-ska/tech-assessment/user-manager-api/controllers/routers"
 	"github.com/wiseman-ska/tech-assessment/user-manager-api/data"
 	"github.com/wiseman-ska/tech-assessment/user-manager-api/models"
-	"github.com/wiseman-ska/tech-assessment/user-manager-api/controllers"
 	"net/http"
 )
 
@@ -22,7 +20,7 @@ func UserRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := &dataResource.Data
-	context := controllers.NewContext()
+	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
 	userRepo := &data.UserRepository{Col: userCol}
@@ -59,7 +57,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		Email:    loginModel.Email,
 		Password: loginModel.Password,
 	}
-	context := routers.NewContext()
+	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
 	userRepo := &data.UserRepository{Col: userCol}
