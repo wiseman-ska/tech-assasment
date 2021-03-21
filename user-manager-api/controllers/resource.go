@@ -8,6 +8,10 @@ type UserResource struct {
 	Data models.User `json:"data"`
 }
 
+type UsersResource struct {
+	Data []models.User `json:"data"`
+}
+
 type LoginResource struct {
 	Data LoginModel `json:"data"`
 }
@@ -23,5 +27,5 @@ type LoginModel struct {
 
 type AuthUserModel struct {
 	User  *models.User `json:"user"`
-	Token string      `json:"token"`
+	Token string       `json:"token"`
 }

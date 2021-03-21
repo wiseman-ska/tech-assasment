@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/wiseman-ska/tech-assessment/user-manager-api/commons"
-	"github.com/wiseman-ska/tech-assessment/user-manager-api/data"
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/data-persistance"
 	"github.com/wiseman-ska/tech-assessment/user-manager-api/models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -26,7 +26,7 @@ func UserRegisterHandler(w http.ResponseWriter, r *http.Request) {
 	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
-	userRepo := &data.UserRepository{Col: userCol}
+	userRepo := &data_persistance.UserRepository{Col: userCol}
 	_ = userRepo.CreateUser(user)
 	user.HashPassword = nil
 	if resp, err := json.Marshal(UserResource{Data: *user}); err != nil {
@@ -41,7 +41,6 @@ func UserRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 		w.Write(resp)
 	}
-
 }
 
 func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +62,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
-	userRepo := &data.UserRepository{Col: userCol}
+	userRepo := &data_persistance.UserRepository{Col: userCol}
 	if user, err := userRepo.Login(loginUser); err != nil {
 		commons.DisplayAppError(w,
 			err,
@@ -99,16 +98,15 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write(resp)
 	}
-
 }
 
 func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
-	userRepo := &data.UserRepository{Col: userCol}
+	userRepo := &data_persistance.UserRepository{Col: userCol}
 	users := userRepo.GetAllUsers()
-	resp, err := json.Marshal(UserResource{Data: users})
+	resp, err := json.Marshal(UsersResource{Data: users})
 	if err != nil {
 		commons.DisplayAppError(w,
 			err,
@@ -128,7 +126,7 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
-	userRepo := &data.UserRepository{Col: userCol}
+	userRepo := &data_persistance.UserRepository{Col: userCol}
 	user, err := userRepo.GetUserById(&id)
 	if err != nil {
 		if err == mgo.ErrNotFound {
@@ -176,7 +174,7 @@ func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
-	userRepo := &data.UserRepository{Col: userCol}
+	userRepo := &data_persistance.UserRepository{Col: userCol}
 	if err := userRepo.UpdateUser(user); err != nil {
 		commons.DisplayAppError(w,
 			err,
@@ -195,7 +193,7 @@ func UserDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
-	userRepo := &data.UserRepository{Col: userCol}
+	userRepo := &data_persistance.UserRepository{Col: userCol}
 	if err := userRepo.DeleteUser(&id); err != nil {
 		commons.DisplayAppError(w,
 			err,

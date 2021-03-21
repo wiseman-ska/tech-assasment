@@ -54,7 +54,6 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	token, err := request.ParseFromRequest(r, request.OAuth2Extractor, func(token *jwt.Token) (interface{}, error) {
 		return verifyKey, nil
 	})
-
 	if err != nil {
 		switch err.(type) {
 
