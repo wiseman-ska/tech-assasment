@@ -11,10 +11,10 @@ func SetupUserRoutes(router *mux.Router) *mux.Router {
 	userRouter := mux.NewRouter()
 	userRouter.HandleFunc("/users/login", controllers.UserLoginHandler).Methods("POST")
 	userRouter.HandleFunc("/users/create", controllers.UserRegisterHandler).Methods("POST")
-	userRouter.HandleFunc("/api/v1/users/update/{id}", controllers.UserRegisterHandler).Methods("POST")
-	userRouter.HandleFunc("/api/v1/users/delete/{id}", controllers.UserRegisterHandler).Methods("DELETE")
-	userRouter.HandleFunc("/api/v1/users/all", controllers.UserRegisterHandler).Methods("GET")
-	userRouter.HandleFunc("/api/v1/users/{id}", controllers.UserRegisterHandler).Methods("GET")
+	userRouter.HandleFunc("/api/v1/users/update/{id}", controllers.UserUpdateHandler).Methods("PUT")
+	userRouter.HandleFunc("/api/v1/users/delete/{id}", controllers.UserDeleteHandler).Methods("DELETE")
+	userRouter.HandleFunc("/api/v1/users/all", controllers.UserGetUsersHandler).Methods("GET")
+	userRouter.HandleFunc("/api/v1/users/{id}", controllers.UserGetUserHandler).Methods("GET")
 
 	router.PathPrefix("/api").Handler(negroni.New(
 		negroni.HandlerFunc(commons.Authorize), negroni.Wrap(userRouter),

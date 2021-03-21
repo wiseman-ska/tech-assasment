@@ -29,7 +29,7 @@ func UserRegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if resp, err := json.Marshal(UserResource{Data: *user}); err != nil {
 		commons.DisplayAppError(w,
 			err,
-			"An unexpected error has occured",
+			"An unexpected error has occurred",
 			500,
 		)
 		return
@@ -96,5 +96,21 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write(resp)
 	}
+
+}
+
+func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func UserDeleteHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func UserGetUsersHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func UserGetUserHandler(w http.ResponseWriter, r *http.Request) {
 
 }
