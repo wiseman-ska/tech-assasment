@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	privKeyPath = "auth-keys/app.rsa"
-	pubKeyPath  = "auth-keys/app.rsa.pub"
+	privKeyPath = "user-manager-api/auth-keys/app.rsa"
+	pubKeyPath  = "user-manager-api/auth-keys/app.rsa.pub"
 )
 
 var (
