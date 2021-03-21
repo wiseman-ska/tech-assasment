@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"github.com/wiseman-ska/tech-assessment/user-manager-api/commons"
 	"github.com/wiseman-ska/tech-assessment/user-manager-api/data"
 	"github.com/wiseman-ska/tech-assessment/user-manager-api/models"
+	"gopkg.in/mgo.v2"
 	"net/http"
 )
 
@@ -119,15 +121,46 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(resp)
 }
 
+func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	context := NewContext()
+	defer context.Close()
+	userCol := context.Collection(models.UsersCollection)
+	userRepo := &data.UserRepository{Col: userCol}
+	user, err := userRepo.GetUserById(id)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}else {
+			commons.DisplayAppError(w,
+				err,
+				"An unexpected error has occurred",
+				500,
+			)
+			return
+		}
+	}
+	resp, err := json.Marshal(user)
+	if err != nil {
+		commons.DisplayAppError(w,
+			err,
+			"An unexpected error has occurred",
+			500,
+		)
+		return
+	}else {
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(resp)
+	}
+}
 
 func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
 func UserDeleteHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 
 }
