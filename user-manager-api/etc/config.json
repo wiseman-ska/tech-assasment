@@ -1,0 +1,7 @@
+{
+  "server": "localhost:9090",
+  "mongoDBHost": "localhost:27017",
+  "dbUser": "",
+  "pwd": "",
+  "database": "users-min-db"
+}
