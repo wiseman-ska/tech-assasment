@@ -38,10 +38,14 @@ func (repo *UserRepository) GetAllUsers()(u models.User)  {
 	return
 }
 
-func (repo *UserRepository) GetUserById(id string) (u models.User, err error)  {
+func (repo *UserRepository) GetUserById(id *bson.ObjectId) (u models.User, err error)  {
 	return
 }
 
-func (repo *UserRepository)UpdateUser(user *models.User) (err error)  {
+func (repo *UserRepository) UpdateUser(user *models.User) (err error)  {
+	return
+}
+
+func (repo *UserRepository) DeleteUser(id *bson.ObjectId) (err error)  {
 	return
 }

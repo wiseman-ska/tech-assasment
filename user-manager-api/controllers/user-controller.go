@@ -124,12 +124,12 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
+	id := bson.ObjectIdHex(vars["id"])
 	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
 	userRepo := &data.UserRepository{Col: userCol}
-	user, err := userRepo.GetUserById(id)
+	user, err := userRepo.GetUserById(&id)
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			w.WriteHeader(http.StatusNoContent)
@@ -172,6 +172,7 @@ func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := &dataResource.Data
+	user.Id = id
 	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
@@ -189,5 +190,20 @@ func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserDeleteHandler(w http.ResponseWriter, r *http.Request) {
-
+	vars := mux.Vars(r)
+	id := bson.ObjectIdHex(vars["id"])
+	context := NewContext()
+	defer context.Close()
+	userCol := context.Collection(models.UsersCollection)
+	userRepo := &data.UserRepository{Col: userCol}
+	if err := userRepo.DeleteUser(&id); err != nil {
+		commons.DisplayAppError(w,
+			err,
+			"An unexpected error has occurred",
+			http.StatusInternalServerError,
+		)
+		return
+	}else {
+		w.WriteHeader(http.StatusOK)
+	}
 }
