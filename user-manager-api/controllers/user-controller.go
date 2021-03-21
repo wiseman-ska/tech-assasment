@@ -88,7 +88,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			commons.DisplayAppError(w,
 				err,
-				"An unexpected error has occured",
+				"An unexpected error has occurred",
 				500,
 			)
 			return
@@ -99,15 +99,32 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func UserGetUsersHandler(w http.ResponseWriter, r *http.Request) {
+	context := NewContext()
+	defer context.Close()
+	userCol := context.Collection(models.UsersCollection)
+	userRepo := &data.UserRepository{Col: userCol}
+	users := userRepo.GetAllUsers()
+	resp, err := json.Marshal(UserResource{Data: users})
+	if err != nil {
+		commons.DisplayAppError(w,
+			err,
+			"An unexpected error has occurred",
+			500,
+		)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(resp)
+}
+
+
 func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
 func UserDeleteHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func UserGetUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
