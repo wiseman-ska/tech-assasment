@@ -41,8 +41,9 @@ func GenerateToken(name, role string) (string, error) {
 	}{name, role}
 
 	Claims["exp"] = time.Now().Add(time.Minute * 20).Unix()
-	t := jwt.NewWithClaims(jwt.GetSigningMethod("RS256"), Claims)
-	tokenString, err := t.SignedString(signKey)
+	token := jwt.NewWithClaims(jwt.GetSigningMethod("RS256"), Claims)
+	key, _ := jwt.ParseRSAPrivateKeyFromPEM(signKey)
+	tokenString, err := token.SignedString(key)
 	if err != nil {
 		return "", err
 	}
