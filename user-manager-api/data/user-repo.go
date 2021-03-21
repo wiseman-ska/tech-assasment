@@ -33,3 +33,11 @@ func (repo *UserRepository) Login(user models.User) (u *models.User, err error) 
 	}
 	return
 }
+func (repo *UserRepository) GetAllUsers()(u models.User)  {
+
+	return
+}
+
+func (repo *UserRepository) GetUserById(id string) (u models.User, err error)  {
+	return
+}
