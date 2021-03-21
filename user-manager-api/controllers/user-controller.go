@@ -7,6 +7,7 @@ import (
 	"github.com/wiseman-ska/tech-assessment/user-manager-api/data"
 	"github.com/wiseman-ska/tech-assessment/user-manager-api/models"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"net/http"
 )
 
@@ -17,7 +18,7 @@ func UserRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		commons.DisplayAppError(w,
 			err,
 			"Invalid user data",
-			500,
+			http.StatusInternalServerError,
 		)
 		return
 	}
@@ -32,7 +33,7 @@ func UserRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		commons.DisplayAppError(w,
 			err,
 			"An unexpected error has occurred",
-			500,
+			http.StatusInternalServerError,
 		)
 		return
 	} else {
@@ -50,7 +51,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		commons.DisplayAppError(w,
 			err,
 			"Invalid login data",
-			500,
+			http.StatusInternalServerError,
 		)
 		return
 	}
@@ -67,7 +68,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		commons.DisplayAppError(w,
 			err,
 			"Invalid login credentials",
-			401,
+			http.StatusUnauthorized,
 		)
 		return
 	} else {
@@ -76,7 +77,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 			commons.DisplayAppError(w,
 				err,
 				"Error while generating the access token",
-				500,
+				http.StatusInternalServerError,
 			)
 			return
 		}
@@ -91,7 +92,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 			commons.DisplayAppError(w,
 				err,
 				"An unexpected error has occurred",
-				500,
+				http.StatusInternalServerError,
 			)
 			return
 		}
@@ -112,7 +113,7 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 		commons.DisplayAppError(w,
 			err,
 			"An unexpected error has occurred",
-			500,
+			http.StatusInternalServerError,
 		)
 		return
 	}
@@ -137,7 +138,7 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 			commons.DisplayAppError(w,
 				err,
 				"An unexpected error has occurred",
-				500,
+				http.StatusInternalServerError,
 			)
 			return
 		}
@@ -147,7 +148,7 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 		commons.DisplayAppError(w,
 			err,
 			"An unexpected error has occurred",
-			500,
+			http.StatusInternalServerError,
 		)
 		return
 	}else {
@@ -158,7 +159,33 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
-
+	vars := mux.Vars(r)
+	id := bson.ObjectIdHex(vars["id"])
+	var dataResource UserResource
+	err := json.NewDecoder(r.Body).Decode(&dataResource)
+	if err != nil {
+		commons.DisplayAppError(w,
+			err,
+			"Invalid user data",
+			http.StatusInternalServerError,
+		)
+		return
+	}
+	user := &dataResource.Data
+	context := NewContext()
+	defer context.Close()
+	userCol := context.Collection(models.UsersCollection)
+	userRepo := &data.UserRepository{Col: userCol}
+	if err := userRepo.UpdateUser(user); err != nil {
+		commons.DisplayAppError(w,
+			err,
+			"An unexpected error has occurred",
+			http.StatusInternalServerError,
+		)
+		return
+	}else {
+		w.WriteHeader(http.StatusOK)
+	}
 }
 
 func UserDeleteHandler(w http.ResponseWriter, r *http.Request) {

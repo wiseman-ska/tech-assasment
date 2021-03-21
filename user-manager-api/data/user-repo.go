@@ -41,3 +41,7 @@ func (repo *UserRepository) GetAllUsers()(u models.User)  {
 func (repo *UserRepository) GetUserById(id string) (u models.User, err error)  {
 	return
 }
+
+func (repo *UserRepository)UpdateUser(user *models.User) (err error)  {
+	return
+}
