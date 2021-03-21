@@ -22,14 +22,14 @@ func (repo *UserRepository) CreateUser(user *models.User) error {
 	return err
 }
 
-func (repo *UserRepository) Login(user models.User) (u models.User, err error) {
+func (repo *UserRepository) Login(user models.User) (u *models.User, err error) {
 	err = repo.Col.Find(bson.M{"email": user.Email}).One(&u)
 	if err != nil {
 		return
 	}
 	err = bcrypt.CompareHashAndPassword(u.HashPassword, []byte(user.Password))
 	if err != nil {
-		u = models.User{}
+		u = &models.User{}
 	}
 	return
 }

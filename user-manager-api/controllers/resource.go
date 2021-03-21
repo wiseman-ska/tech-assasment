@@ -22,6 +22,6 @@ type LoginModel struct {
 }
 
 type AuthUserModel struct {
-	User  models.User `json:"user"`
+	User  *models.User `json:"user"`
 	Token string      `json:"token"`
 }
