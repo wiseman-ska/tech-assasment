@@ -19,11 +19,11 @@ type (
 		Data AppError `json:"data"`
 	}
 	AppConfig struct {
-		Server      string
-		MongoDBHost string
-		DBUser      string
-		DBPwd       string
-		Database    string
+		Server      string `json:"server"`
+		MongoDBHost string `json:"mongoDBHost"`
+		DBUser      string `json:"dbUser"`
+		DBPwd       string `json:"pwd"`
+		Database    string `json:"database"`
 	}
 )
 var AppConf *AppConfig
