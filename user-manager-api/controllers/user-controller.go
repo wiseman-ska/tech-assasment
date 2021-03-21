@@ -99,7 +99,7 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func UserGetUsersHandler(w http.ResponseWriter, r *http.Request) {
+func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
@@ -128,6 +128,6 @@ func UserDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func UserGetUserHandler(w http.ResponseWriter, r *http.Request) {
+func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 
 }

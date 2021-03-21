@@ -13,11 +13,11 @@ func SetupUserRoutes(router *mux.Router) *mux.Router {
 	userRouter.HandleFunc("/users/create", controllers.UserRegisterHandler).Methods("POST")
 	userRouter.HandleFunc("/api/v1/users/update/{id}", controllers.UserUpdateHandler).Methods("PUT")
 	userRouter.HandleFunc("/api/v1/users/delete/{id}", controllers.UserDeleteHandler).Methods("DELETE")
-	userRouter.HandleFunc("/api/v1/users/all", controllers.UserGetUsersHandler).Methods("GET")
-	userRouter.HandleFunc("/api/v1/users/{id}", controllers.UserGetUserHandler).Methods("GET")
+	userRouter.HandleFunc("/api/v1/users/all", controllers.GetUsersHandler).Methods("GET")
+	userRouter.HandleFunc("/api/v1/users/{id}", controllers.GetUserHandler).Methods("GET")
 
 	router.PathPrefix("/api").Handler(negroni.New(
 		negroni.HandlerFunc(commons.Authorize), negroni.Wrap(userRouter),
 	))
-	return router
+	return userRouter
 }
