@@ -12,7 +12,7 @@ import (
 )
 
 func UserRegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var dataResource UserResource
+	dataResource := new(UserResource)
 	err := json.NewDecoder(r.Body).Decode(&dataResource)
 	if err != nil {
 		commons.DisplayAppError(w,
@@ -22,14 +22,22 @@ func UserRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	user := &dataResource.Data
+	user := dataResource.Data
 	context := NewContext()
 	defer context.Close()
 	userCol := context.Collection(models.UsersCollection)
 	userRepo := &data_persistance.UserRepository{Col: userCol}
-	_ = userRepo.CreateUser(user)
+	err = userRepo.CreateUser(user)
+	if err != nil {
+		commons.DisplayAppError(w,
+			err,
+			"An unexpected error has occurred",
+			http.StatusInternalServerError,
+		)
+		return
+	}
 	user.HashPassword = nil
-	if resp, err := json.Marshal(UserResource{Data: *user}); err != nil {
+	if resp, err := json.Marshal(UserResource{Data: user}); err != nil {
 		commons.DisplayAppError(w,
 			err,
 			"An unexpected error has occurred",
@@ -106,6 +114,11 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	userCol := context.Collection(models.UsersCollection)
 	userRepo := &data_persistance.UserRepository{Col: userCol}
 	users := userRepo.GetAllUsers()
+	for _, user := range users {
+		if user != nil {
+			user.HashPassword = nil
+		}
+	}
 	resp, err := json.Marshal(UsersResource{Data: users})
 	if err != nil {
 		commons.DisplayAppError(w,
@@ -116,7 +129,7 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("Content-Type", "application/json")
 	w.Write(resp)
 }
 
@@ -128,6 +141,7 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 	userCol := context.Collection(models.UsersCollection)
 	userRepo := &data_persistance.UserRepository{Col: userCol}
 	user, err := userRepo.GetUserById(&id)
+	user.HashPassword = nil
 	if err != nil {
 		if err == mgo.ErrNotFound {
 			w.WriteHeader(http.StatusNoContent)
@@ -151,7 +165,7 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}else {
 		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Add("Content-Type", "application/json")
 		w.Write(resp)
 	}
 }
@@ -159,7 +173,7 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := bson.ObjectIdHex(vars["id"])
-	var dataResource UserResource
+	dataResource := new(UserResource)
 	err := json.NewDecoder(r.Body).Decode(&dataResource)
 	if err != nil {
 		commons.DisplayAppError(w,
@@ -169,7 +183,7 @@ func UserUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	user := &dataResource.Data
+	user := dataResource.Data
 	user.Id = id
 	context := NewContext()
 	defer context.Close()
