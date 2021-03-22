@@ -59,5 +59,9 @@ func initConfig() {
 	loadAppConfig()
 }
 
+func IsValidSAIdNumber() bool {
+
+	return true
+}
 
 
