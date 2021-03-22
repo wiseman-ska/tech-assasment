@@ -9,15 +9,15 @@ import (
 
 func SetupUserRoutes(router *mux.Router) *mux.Router {
 	userRouter := mux.NewRouter()
-	userRouter.HandleFunc("/users/login", controllers.UserLoginHandler).Methods("POST")
-	userRouter.HandleFunc("/users/create", controllers.UserRegisterHandler).Methods("POST")
+	router.HandleFunc("/users/login", controllers.UserLoginHandler).Methods("POST")
+	router.HandleFunc("/users/create", controllers.UserRegisterHandler).Methods("POST")
 	userRouter.HandleFunc("/api/v1/users/update/{id}", controllers.UserUpdateHandler).Methods("PUT")
 	userRouter.HandleFunc("/api/v1/users/delete/{id}", controllers.UserDeleteHandler).Methods("DELETE")
 	userRouter.HandleFunc("/api/v1/users/all", controllers.GetUsersHandler).Methods("GET")
 	userRouter.HandleFunc("/api/v1/users/{id}", controllers.GetUserByIdHandler).Methods("GET")
 
-	router.PathPrefix("/api").Handler(negroni.New(
+	router.PathPrefix("/api/v1").Handler(negroni.New(
 		negroni.HandlerFunc(commons.Authorize), negroni.Wrap(userRouter),
 	))
-	return userRouter
+	return router
 }

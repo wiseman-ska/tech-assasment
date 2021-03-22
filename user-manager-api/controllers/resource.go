@@ -5,11 +5,11 @@ import (
 )
 
 type UserResource struct {
-	Data models.User `json:"data"`
+	Data *models.User `json:"data"`
 }
 
 type UsersResource struct {
-	Data []models.User `json:"data"`
+	Data []*models.User `json:"data"`
 }
 
 type LoginResource struct {
