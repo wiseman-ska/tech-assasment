@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 const configPath = "user-manager-api/etc/config.json"
@@ -55,13 +56,33 @@ func loadAppConfig() {
 	}
 }
 
-func initConfig() {
-	loadAppConfig()
-}
-
-func IsValidSAIdNumber() bool {
-
+func IsValidSAIdNumber(idNum string) bool {
+	if len(idNum) != 13 {
+		return false
+	}
+	number, _ := strconv.Atoi(idNum)
+	if (number%10+checksum(number/10))%10 != 0 {
+		return false
+	}
 	return true
 }
 
+func checksum(number int) int {
+	var luhn int
+	for i := 0; number > 0; i++ {
+		cur := number % 10
+		if i%2 == 0 {
+			cur = cur * 2
+			if cur > 9 {
+				cur = cur%10 + cur/10
+			}
+		}
+		luhn += cur
+		number = number / 10
+	}
+	return luhn % 10
+}
 
+func initConfig() {
+	loadAppConfig()
+}
