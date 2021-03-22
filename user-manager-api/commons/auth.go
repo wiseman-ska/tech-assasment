@@ -24,7 +24,6 @@ func initKeys() {
 	if err != nil {
 		log.Fatal("[initKeys]: %s\n", err)
 	}
-
 	verifyKey, err = ioutil.ReadFile(pubKeyPath)
 	if err != nil {
 		log.Fatal("[initKeys]: %s\n", err)
@@ -52,7 +51,8 @@ func GenerateToken(name, role string) (string, error) {
 
 func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	token, err := request.ParseFromRequest(r, request.OAuth2Extractor, func(token *jwt.Token) (interface{}, error) {
-		return verifyKey, nil
+		key, _ := jwt.ParseRSAPublicKeyFromPEM(verifyKey)
+		return key, nil
 	})
 	if err != nil {
 		switch err.(type) {

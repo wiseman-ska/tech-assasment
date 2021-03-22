@@ -39,7 +39,7 @@ func (repo *UserRepository) CreateUser(user *models.User) error {
 		return err
 	}
 	if user.IdNumber != "" {
-		if commons.IsValidSAIdNumber() {
+		if commons.IsValidSAIdNumber(user.IdNumber) {
 			savedUser, _ = repo.GetUserByIdNumber(user.IdNumber)
 			if savedUser != nil {
 				err := fmt.Errorf("user already exists in the system")
@@ -66,7 +66,7 @@ func (repo *UserRepository) CreateUser(user *models.User) error {
 		return err
 	}
 	if user.LastName == "" {
-		err := fmt.Errorf("last naiime not provided")
+		err := fmt.Errorf("last name not provided")
 		return err
 	}
 	user.HashPassword = hpass
@@ -105,8 +105,6 @@ func (repo *UserRepository) UpdateUser(user *models.User) error  {
 			"mobileNumber": user.MobileNumber,
 			"idNumber": user.MobileNumber,
 			"physicalAddress": user.PhysicalAddress,
-			"password": user.Password,
-
 		})
 	return err
 }
