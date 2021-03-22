@@ -1,6 +1,8 @@
 package data_persistance
 
 import (
+	"fmt"
+	"github.com/wiseman-ska/tech-assessment/user-manager-api/commons"
 	"github.com/wiseman-ska/tech-assessment/user-manager-api/models"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2"
@@ -24,9 +26,48 @@ func (repo *UserRepository) Login(user models.User) (u *models.User, err error) 
 }
 
 func (repo *UserRepository) CreateUser(user *models.User) error {
-	hpass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		panic(err)
+	var hpass []byte
+	var err error
+	var savedUser *models.User
+	if user.Password != "" {
+		hpass, err = bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			panic(err)
+		}
+	}else {
+		err := fmt.Errorf("password not provided")
+		return err
+	}
+	if user.IdNumber != "" {
+		if commons.IsValidSAIdNumber() {
+			savedUser, _ = repo.GetUserByIdNumber(user.IdNumber)
+			if savedUser != nil {
+				err := fmt.Errorf("user already exists in the system")
+				return err
+			}
+		}else {
+			err := fmt.Errorf("invalid SA ID number")
+			return err
+		}
+	}else {
+		err := fmt.Errorf("id number not provided")
+		return err
+	}
+	if user.MobileNumber != "" {
+		if savedUser != nil {
+			if user.MobileNumber == savedUser.MobileNumber {
+				err := fmt.Errorf("mobile number already exists in the system")
+				return err
+			}
+		}
+	}
+	if user.FirstName == "" {
+		err := fmt.Errorf("first name not provided")
+		return err
+	}
+	if user.LastName == "" {
+		err := fmt.Errorf("last naiime not provided")
+		return err
 	}
 	user.HashPassword = hpass
 	user.Password = ""
@@ -34,18 +75,24 @@ func (repo *UserRepository) CreateUser(user *models.User) error {
 	return err
 }
 
-func (repo *UserRepository) GetAllUsers() []models.User  {
-	var users []models.User
-	iter := repo.Col.Find(nil).Iter()
-	result := models.User{}
-	for iter.Next(&result) {
+func (repo *UserRepository) GetAllUsers() []*models.User  {
+	users := make([]*models.User, 0)
+	iter := repo.Col.Find(bson.M{}).Iter()
+	result := new(models.User)
+	for iter.Next(result) {
 		users = append(users, result)
+		result = new(models.User)
 	}
 	return users
 }
 
 func (repo *UserRepository) GetUserById(id *bson.ObjectId) (u models.User, err error)  {
 	err = repo.Col.FindId(&id).One(&u)
+	return
+}
+
+func (repo *UserRepository) GetUserByIdNumber(idNumber string) (u *models.User, err error)  {
+	err = repo.Col.Find(bson.M{"idNumber": idNumber}).One(&u)
 	return
 }
 
