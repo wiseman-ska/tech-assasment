@@ -97,7 +97,17 @@ func (repo *UserRepository) GetUserByIdNumber(idNumber string) (u *models.User, 
 }
 
 func (repo *UserRepository) UpdateUser(user *models.User) error  {
-	err := repo.Col.Update(bson.M{"_id": user.Id},
+	var hpass []byte
+	var err error
+	if user.Password != "" {
+		hpass, err = bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			panic(err)
+		}
+	}
+	user.HashPassword = hpass
+	user.Password = ""
+	err = repo.Col.Update(bson.M{"_id": user.Id},
 		bson.M{
 			"firstName": user.FirstName,
 			"lastName": user.LastName,
@@ -105,7 +115,9 @@ func (repo *UserRepository) UpdateUser(user *models.User) error  {
 			"mobileNumber": user.MobileNumber,
 			"idNumber": user.MobileNumber,
 			"physicalAddress": user.PhysicalAddress,
+			"hashPassword": user.HashPassword,
 		})
+
 	return err
 }
 
