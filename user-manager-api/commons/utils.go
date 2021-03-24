@@ -1,6 +1,7 @@
 package commons
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -43,6 +44,10 @@ func DisplayAppError(w http.ResponseWriter, handleError error, message string, c
 	}
 }
 
+func initConfig() {
+	loadAppConfig()
+}
+
 func loadAppConfig() {
 	file, err := os.Open(configPath)
 	defer file.Close()
@@ -83,6 +88,12 @@ func checksum(number int) int {
 	return luhn % 10
 }
 
-func initConfig() {
-	loadAppConfig()
+func JSONMarshal(v interface{}, safeEncoding bool) ([]byte, error) {
+	b, err := json.Marshal(v)
+	if safeEncoding {
+		b = bytes.Replace(b, []byte("\\u003c"), []byte(""), -1)
+		b = bytes.Replace(b, []byte("\\u003e"), []byte(""), -1)
+		b = bytes.Replace(b, []byte("\\u0026"), []byte(""), -1)
+	}
+	return b, err
 }
