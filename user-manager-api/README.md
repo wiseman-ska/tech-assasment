@@ -1,1 +1,1 @@
-# tech-assasment
+# tech-assessment
