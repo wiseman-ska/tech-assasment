@@ -230,5 +230,5 @@ Retrieves existing users and returns json object containing their details
         }
     ```
 
-
+**Notes:** Please use bearer token to access other end-points. I didn't cover user update, user delete and get user by id in this doc, but the implementation is provided.
 
